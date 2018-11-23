@@ -1,0 +1,154 @@
+<html>
+<head>
+    <title>Painting With Emotions</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Custom Bootstrap theme -->
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.1/darkly/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-ae362vOLHy2F1EfJtpMbNW0i9pNM1TP2l5O4VGYYiLJKsaejqVWibbP6BSf0UU5i"
+          crossorigin="anonymous" />
+
+    <link href="css/demo.css" rel="stylesheet" type="text/css" />
+
+    <!-- JQuery -->
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+
+    <!-- D3 - Data Driven Documents -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+    <!-- Fallbacks -->
+    <script defer>
+        if (!window.$) {
+            document.write('<script src="/lib/jquery-3.3.1.min.js"><\/script>');
+        }
+    </script>
+    <script defer>
+        if (!window.d3) {
+            document.write('<script src="/lib/d3.v5.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        (function($) {
+            $(function() {
+                if ($('body').css('color') !== 'rgb(255, 255, 255)') {
+                    $('head').prepend('<link rel="stylesheet" href="/lib/bootstrap.min.css">');
+                }
+            });
+        })(window.jQuery);
+    </script>
+
+    <!-- Affectiva SDK -->
+    <script defer src="https://download.affectiva.com/js/3.2/affdex.js"></script>
+
+    <!-- demo files -->
+    <script defer src="js/player.js"></script>
+    <script defer src="js/graph.js"></script>
+    <script defer src="js/index.js"></script>
+</head>
+
+<body>
+<a href="https://www.affectiva.com/" target="_blank">
+    <img class="affectiva-logo"  src="images/affectiva-logo.png" width=225 height=45>
+</a>
+<div class="main container d-flex flex-column">
+
+    <!-- Loading View-->
+    <div class="row d-flex align-items-center full-height" id="loading-row">
+        <div class="col loading-state">
+            <div class="loader"></div>
+            <br>
+            <p id="starting-message">This demo requires your webcam, please make sure it is enabled.</p>
+            <div class="demo-message" id="msg-starting-webcam">
+                Connecting to webcam...
+            </div>
+            <div class="demo-message" id="msg-detector-status">
+                Loading the emotion detector. This may take a few minutes ...
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Page Errors -->
+    <div class="row d-none align-items-center justify-content-center full-height" id="error-row">
+        <div class="col-md-6 demo-message" id="msg-webcam-failure">
+            <div class="alert alert-danger align-self-center" role="alert"><strong>Failed to connect to webcam.</strong><br> Please make sure your webcam is not being used by any other apps.</div>
+        </div>
+        <div class="col-md-6 offset-md-3 demo-message" id="msg-affdex-failure">
+            <div class="alert alert-danger" role="alert"><strong>Error: </strong>Unable to load the emotion detector. Please reload this page.</div>
+        </div>
+        <div class="col-md-6 offset-md-3 demo-message" id="msg-player-failure">
+            <div class="alert alert-warning" role="alert"><strong>Error: </strong>There was a problem with the youtube player. Please try reloading the page again.</div>
+        </div>
+    </div>
+
+    <div id="text-width"></div>
+    <div id="lightbox"></div>
+    <div id="facevideo-node" style="display: none;"></div>
+
+    <!-- Search View -->
+    <div class="row d-none align-items-center flex-fill" id="demo-setup">
+        <div class="col-md-6 offset-md-3 demo-message" id="msg-bad-url">
+            <div class="alert alert-warning" role="alert"><strong>Error: </strong>Please enter a valid YouTube URL or search phrase.</div>
+        </div>
+        <div class="col-md-6 offset-md-3 demo-message" id="msg-short-video">
+            <div class="alert alert-warning" role="alert"><strong>Error: </strong>That YouTube video is too short.</div>
+        </div>
+        <div class="col-md-8 offset-md-2" id="instructions">
+            <div class="card my-3">
+                <div class="card-body">
+                    <p class="card-text">Welcome to Painting With Emotions!</p>
+                    <p class="card-text">This demo uses your webcam and Affectiva's JavaScript SDK to analyze your emotions as you watch a YouTube video.</p>
+                    <div class="form-group">
+                        <div class="input-group">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card my-3 list-group" id="search-results" style="display: none;"></div>
+            <div class="card my-3">
+                <div class="card-body">
+                    <p>Click The Video Below</p>
+                    <div class="row justify-content-center no-gutters" id="example-container">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video View -->
+    <div class="row full-height align-items-center" id="video-container">
+        <div class="col text-center">
+            <div class="row">
+                <div class="col-lg-8 offset-lg-2" >
+                    <div id="video-wrapper">
+                        <div id="player" style="pointer-events: none"></div>
+                    </div>
+                </div>
+            </div>
+           <div class="row" id="svg-container">
+                <div class="col-lg-2">
+                    <ul class="nav d-flex flex-lg-column justify-content-center">
+                        <li class="nav-item all buttons all-box box-squared selected" id="all"><p> &#x1F610; Show all</p></li>
+                        <li class="nav-item joy buttons joy-box box-squared" id="joy"><p>&#x1F603; Joy</p></li>
+                        <li class="nav-item anger buttons angry-face anger-box box-squared" id="anger"><span>&#x1F620; Anger</span></li>
+                        <li class="nav-item disgust buttons disgusted-face disgust-box box-squared" id="disgust"><span>&#x1F601; Disgust</span></li>
+                        <li class="nav-item contempt buttons contempt-face contempt-box box-squared" id="contempt"><span>&#x1F60F; Contempt</span></li>
+                        <li class="nav-item surprise buttons surprise-face surprise-box box-squared" id="surprise"><span>&#x1F62F; Surprise</span></li>
+                    </ul>
+                </div>
+                <div id="svg-wrapper" class="col-lg-8 text-center" style>
+                    <svg id="svg-curve"></svg>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
