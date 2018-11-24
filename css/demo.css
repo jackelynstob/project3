@@ -80,6 +80,7 @@ h3 {
     left: 0;
     width: 100%;
     height: 100%;
+    padding: 50px;
 }
 
 #svg-wrapper {
@@ -176,6 +177,7 @@ text.time {
 .all-box {
     background: #696969;
     color:white;
+    display: none;
 }
 .joy-box {
     background: #2ee65d;
@@ -205,6 +207,7 @@ text.time {
     position: absolute;
     top: 20 ;
     right: 20;
+    display: none;
 }
 
 .main {
@@ -229,8 +232,8 @@ text.time {
 }
 
 .loader {
-    border: 7px solid #f3f3f3; /* Light grey */
-    border-top: 7px solid #E80089; /* Blue */
+    border: 7px solid #fc4627; /* Light grey */
+    border-top: 7px solid #ffd000; /* Blue */
     border-radius: 50%;
     width: 50px;
     height: 50px;
